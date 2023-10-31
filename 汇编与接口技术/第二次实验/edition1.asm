@@ -1,0 +1,56 @@
+.model small
+.386
+DSEG SEGMENT
+    PORTA EQU 280H
+    PORTB EQU 281H
+    PORTD EQU 283H
+DSEG ENDS
+
+CSEG SEGMENT
+ASSUME CS:CSEG,DS:DSEG
+START:
+    MOV AX,DSEG
+    MOV DS,AX
+
+    MOV DX,PORTD
+    MOV AL,90H
+    OUT DX,AL
+
+    MOV DX,PORTA
+    IN AL,DX
+    MOV CL,AL
+    MOV BL,AL
+
+LP1:
+    MOV DX,PORTA
+    IN AL,DX
+    MOV BH,AL
+    CMP BH,BL
+    JZ LIGHT
+    MOV BL,BH
+    MOV CL,BL
+
+LIGHT:
+    MOV AL,CL
+    MOV DX,PORTB
+    OUT DX,AL
+
+    CALL DELAY1
+    ROR AL,1
+    MOV CL,AL
+
+    JMP LP1
+
+DELAY1 PROC
+    mov cx,25
+AGAIN:
+    mov dx,0ffffh
+DELAY:
+    dec dx
+    jnz DELAY
+    LOOP AGAIN
+    RET
+DELAY1 ENDP
+
+CSEG ENDS
+END START
